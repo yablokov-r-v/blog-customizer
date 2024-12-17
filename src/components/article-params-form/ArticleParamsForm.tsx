@@ -1,69 +1,40 @@
 import { ArrowButton } from 'src/ui/arrow-button';
 import { Button } from 'src/ui/button';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import clsx from 'clsx';
 import { Select } from 'src/ui/select/Select';
 import { RadioGroup } from 'src/ui/radio-group/RadioGroup';
 import styles from './ArticleParamsForm.module.scss';
-import { OptionType } from 'src/constants/articleProps';
+import {
+	defaultArticleState,
+	OptionType,
+	fontFamilyOptions,
+	fontSizeOptions,
+	fontColors,
+	backgroundColors,
+	contentWidthArr,
+	ArticleStateType,
+} from 'src/constants/articleProps';
 import { useOutsideClickClose } from 'src/ui/select/hooks/useOutsideClickClose';
 import { Separator } from 'src/ui/separator/Separator';
+import { Text } from 'src/ui/text';
 
 type ArticleParamsFormProps = {
-	fontFamilyOptions: OptionType[];
-	selectedFontFamily: OptionType;
-	handleFontFamilyChange: (option: OptionType) => void;
-
-	fontSizeOptions: OptionType[];
-	selectedFontSize: OptionType;
-	handleFontSizeChange: (option: OptionType) => void;
-
-	fontColors: OptionType[];
-	selectedFontColor: OptionType;
-	handleFontColorChange: (option: OptionType) => void;
-
-	backgroundColors: OptionType[];
-	selectedBackgroundColor: OptionType;
-	handleBackgroundColorChange: (option: OptionType) => void;
-
-	contentWidthArr: OptionType[];
-	selectedContentWidth: OptionType;
-	handleContentWidthChange: (option: OptionType) => void;
-
-	handleApplyStyles: () => void;
-	handleResetStyles: () => void;
+	articleState: ArticleStateType;
+	handleUpdateArticleState: (newState: ArticleStateType) => void;
 };
 
 export const ArticleParamsForm: React.FC<ArticleParamsFormProps> = ({
-	fontFamilyOptions,
-	selectedFontFamily,
-	handleFontFamilyChange,
-
-	fontSizeOptions,
-	selectedFontSize,
-	handleFontSizeChange,
-
-	fontColors,
-	selectedFontColor,
-	handleFontColorChange,
-
-	backgroundColors,
-	selectedBackgroundColor,
-	handleBackgroundColorChange,
-
-	contentWidthArr,
-	selectedContentWidth,
-	handleContentWidthChange,
-
-	handleApplyStyles,
-	handleResetStyles,
+	articleState,
+	handleUpdateArticleState,
 }) => {
 	const [isAsideOpen, setIsAsideOpen] = useState(false);
+	const [tempState, setTempState] = useState<ArticleStateType>(articleState);
 	const asideRef = useRef(null);
 
-	const handleArrowBottonClick = () => {
-		setIsAsideOpen(!isAsideOpen);
-	};
+	useEffect(() => {
+		setTempState(articleState);
+	}, [articleState]);
 
 	useOutsideClickClose({
 		isOpen: isAsideOpen,
@@ -71,6 +42,54 @@ export const ArticleParamsForm: React.FC<ArticleParamsFormProps> = ({
 		onClose: () => setIsAsideOpen(false),
 		onChange: setIsAsideOpen,
 	});
+
+	const handleArrowBottonClick = () => {
+		setIsAsideOpen(!isAsideOpen);
+	};
+
+	const handleFontFamilyChange = (option: OptionType) => {
+		setTempState((prevState) => ({
+			...prevState,
+			fontFamilyOption: option,
+		}));
+	};
+
+	const handleFontSizeChange = (option: OptionType) => {
+		setTempState((prevState) => ({
+			...prevState,
+			fontSizeOption: option,
+		}));
+	};
+
+	const handleFontColorChange = (option: OptionType) => {
+		setTempState((prevState) => ({
+			...prevState,
+			fontColor: option,
+		}));
+	};
+
+	const handleBackgroundColorChange = (option: OptionType) => {
+		setTempState((prevState) => ({
+			...prevState,
+			backgroundColor: option,
+		}));
+	};
+
+	const handleContentWidthChange = (option: OptionType) => {
+		setTempState((prevState) => ({
+			...prevState,
+			contentWidth: option,
+		}));
+	};
+
+	const handleApplyStyles = () => {
+		handleUpdateArticleState(tempState);
+	};
+
+	const handleResetStyles = () => {
+		setTempState(defaultArticleState);
+		handleUpdateArticleState(defaultArticleState);
+	};
 
 	return (
 		<>
@@ -81,35 +100,38 @@ export const ArticleParamsForm: React.FC<ArticleParamsFormProps> = ({
 					[styles.container_open]: isAsideOpen,
 				})}>
 				<form className={styles.form}>
+					<Text as='h2' size={31} weight={800} uppercase>
+						Задайте параметры
+					</Text>
 					<Select
 						options={fontFamilyOptions}
-						selected={selectedFontFamily}
+						selected={tempState.fontFamilyOption}
 						onChange={handleFontFamilyChange}
 						title='Шрифт'
 					/>
 					<RadioGroup
 						name='fontSize'
 						options={fontSizeOptions}
-						selected={selectedFontSize}
+						selected={tempState.fontSizeOption}
 						onChange={handleFontSizeChange}
 						title='Размер шрифта'
 					/>
 					<Select
 						options={fontColors}
-						selected={selectedFontColor}
+						selected={tempState.fontColor}
 						onChange={handleFontColorChange}
 						title='Цвет шрифта'
 					/>
 					<Separator />
 					<Select
 						options={backgroundColors}
-						selected={selectedBackgroundColor}
+						selected={tempState.backgroundColor}
 						onChange={handleBackgroundColorChange}
 						title='Цвет фона'
 					/>
 					<Select
 						options={contentWidthArr}
-						selected={selectedContentWidth}
+						selected={tempState.contentWidth}
 						onChange={handleContentWidthChange}
 						title='Ширина контента'
 					/>
