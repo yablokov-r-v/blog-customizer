@@ -26,14 +26,15 @@ const App = () => {
 			className={clsx(styles.main)}
 			style={
 				{
+					'--font-family': articleState.fontFamilyOption.value,
+					'--font-size': articleState.fontSizeOption.value,
+					'--font-color': articleState.fontColor.value,
+					'--container-width': articleState.contentWidth.value,
 					'--bg-color': articleState.backgroundColor.value,
 				} as CSSProperties
 			}>
-			<ArticleParamsForm
-				articleState={articleState}
-				handleUpdateArticleState={handleUpdateArticleState}
-			/>
-			<Article articleState={articleState} />
+			<ArticleParamsForm handleUpdateArticleState={handleUpdateArticleState} />
+			<Article />
 		</main>
 	);
 };

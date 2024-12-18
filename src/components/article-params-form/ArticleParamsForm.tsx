@@ -1,6 +1,6 @@
 import { ArrowButton } from 'src/ui/arrow-button';
 import { Button } from 'src/ui/button';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import clsx from 'clsx';
 import { Select } from 'src/ui/select/Select';
 import { RadioGroup } from 'src/ui/radio-group/RadioGroup';
@@ -20,21 +20,16 @@ import { Separator } from 'src/ui/separator/Separator';
 import { Text } from 'src/ui/text';
 
 type ArticleParamsFormProps = {
-	articleState: ArticleStateType;
 	handleUpdateArticleState: (newState: ArticleStateType) => void;
 };
 
 export const ArticleParamsForm: React.FC<ArticleParamsFormProps> = ({
-	articleState,
 	handleUpdateArticleState,
 }) => {
 	const [isAsideOpen, setIsAsideOpen] = useState(false);
-	const [tempState, setTempState] = useState<ArticleStateType>(articleState);
+	const [tempState, setTempState] =
+		useState<ArticleStateType>(defaultArticleState);
 	const asideRef = useRef(null);
-
-	useEffect(() => {
-		setTempState(articleState);
-	}, [articleState]);
 
 	useOutsideClickClose({
 		isOpen: isAsideOpen,
@@ -47,39 +42,10 @@ export const ArticleParamsForm: React.FC<ArticleParamsFormProps> = ({
 		setIsAsideOpen(!isAsideOpen);
 	};
 
-	const handleFontFamilyChange = (option: OptionType) => {
-		setTempState((prevState) => ({
-			...prevState,
-			fontFamilyOption: option,
-		}));
-	};
-
-	const handleFontSizeChange = (option: OptionType) => {
-		setTempState((prevState) => ({
-			...prevState,
-			fontSizeOption: option,
-		}));
-	};
-
-	const handleFontColorChange = (option: OptionType) => {
-		setTempState((prevState) => ({
-			...prevState,
-			fontColor: option,
-		}));
-	};
-
-	const handleBackgroundColorChange = (option: OptionType) => {
-		setTempState((prevState) => ({
-			...prevState,
-			backgroundColor: option,
-		}));
-	};
-
-	const handleContentWidthChange = (option: OptionType) => {
-		setTempState((prevState) => ({
-			...prevState,
-			contentWidth: option,
-		}));
+	const handleOnChange = (field: keyof ArticleStateType) => {
+		return (value: OptionType) => {
+			setTempState((prevState) => ({ ...prevState, [field]: value }));
+		};
 	};
 
 	const handleApplyStyles = () => {
@@ -106,33 +72,33 @@ export const ArticleParamsForm: React.FC<ArticleParamsFormProps> = ({
 					<Select
 						options={fontFamilyOptions}
 						selected={tempState.fontFamilyOption}
-						onChange={handleFontFamilyChange}
+						onChange={handleOnChange('fontFamilyOption')}
 						title='Шрифт'
 					/>
 					<RadioGroup
 						name='fontSize'
 						options={fontSizeOptions}
 						selected={tempState.fontSizeOption}
-						onChange={handleFontSizeChange}
+						onChange={handleOnChange('fontSizeOption')}
 						title='Размер шрифта'
 					/>
 					<Select
 						options={fontColors}
 						selected={tempState.fontColor}
-						onChange={handleFontColorChange}
+						onChange={handleOnChange('fontColor')}
 						title='Цвет шрифта'
 					/>
 					<Separator />
 					<Select
 						options={backgroundColors}
 						selected={tempState.backgroundColor}
-						onChange={handleBackgroundColorChange}
+						onChange={handleOnChange('backgroundColor')}
 						title='Цвет фона'
 					/>
 					<Select
 						options={contentWidthArr}
 						selected={tempState.contentWidth}
-						onChange={handleContentWidthChange}
+						onChange={handleOnChange('contentWidth')}
 						title='Ширина контента'
 					/>
 					<div className={styles.bottomContainer}>
